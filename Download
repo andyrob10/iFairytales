@@ -1,0 +1,128 @@
+using UnityEngine;
+using System;
+using System.Collections;
+using System.IO;
+using UnityEngine.UI;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml;
+using System.Timers;
+using AWSTest;
+	
+	
+public class Download : MonoBehaviour {
+
+
+	
+
+	
+
+	
+	public string url = "https://AAAAAAAAAAAA.mp4";
+	
+
+
+	private Slider downloadProgressBar;
+	public GameObject bar;
+	public float progress = 0.0f;
+	public GameObject LocalPlay;
+	public GameObject DownloadandSave;
+
+
+
+
+
+	void Start ()
+	{
+
+
+		if (!File.Exists (Application.persistentDataPath + "/XXXXXXXX.mp4")) {
+
+			LocalPlay.SetActive (false);
+			DownloadandSave.SetActive (true);
+			bar.SetActive (true);
+			downloadProgressBar = GameObject.Find ("Download Progress Bar").GetComponent<Slider> ();
+			downloadProgressBar.value = 0f;
+		} else {
+			FileInfo SnowWhite = new FileInfo (Application.persistentDataPath + "/XXXXXXXXXX.mp4");
+			if (SnowWhite.Length > 0) { 
+				LocalPlay.SetActive (true);
+				DownloadandSave.SetActive (false);
+			} else {
+
+				LocalPlay.SetActive (false);
+				DownloadandSave.SetActive (true);
+				bar.SetActive (true);
+				downloadProgressBar = GameObject.Find ("Download Progress Bar").GetComponent<Slider> ();
+				downloadProgressBar.value = 0f;
+
+
+			}
+		}
+	}
+
+
+	void Update()
+	{
+		
+	}
+
+
+	
+	public void download(){
+			
+
+		if (!File.Exists (Application.persistentDataPath + "/XXXXXXXXXX.mp4")) {
+			StartCoroutine (DownloadFile ());
+
+
+
+		} else {
+			FileInfo SnowWhite = new FileInfo (Application.persistentDataPath + "/XXXXXXXXXXX.mp4");
+			if (SnowWhite.Length > 0) { 
+				LocalPlay.SetActive (true);
+				DownloadandSave.SetActive (false);
+			} else {
+				File.Delete (Application.persistentDataPath + "/XXXXXXXXXXXX.mp4");
+				StartCoroutine (DownloadFile ());
+			}
+
+		}
+	
+	}
+		
+
+	
+	public IEnumerator DownloadFile()
+	{
+		string keyPairID = "XXXXXXXXXXXXXXXXXXX";
+		string secretKey = @"<RSAKeyValue>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</RSAKeyValue>";
+		
+		var provider = new CloudFrontSecurityProvider (keyPairID, secretKey);
+		var signedUrl = provider.GetCustomUrl (url, DateTime.Now.AddMinutes (120));
+		Debug.Log (signedUrl);
+		WWW www = new WWW (signedUrl);
+		while (!www.isDone)
+		{
+
+			downloadProgressBar.value = www.progress;
+
+			Debug.Log("Downloading : "+www.progress*100+"%");
+
+			LocalPlay.SetActive (false);
+			DownloadandSave.SetActive(true);
+			yield return 0;
+		}
+		File.WriteAllBytes (Application.persistentDataPath + Path.DirectorySeparatorChar + "XXXXXXXXXXX.mp4", www.bytes);
+		UnityEngine.iOS.Device.ResetNoBackupFlag (Application.persistentDataPath + Path.DirectorySeparatorChar + "XXXXXXXXXXX.mp4");
+		LocalPlay.SetActive (true);
+		DownloadandSave.SetActive(false);
+			
+
+	}
+
+}
+
