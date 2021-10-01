@@ -1,0 +1,72 @@
+using UnityEngine;
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml;
+using System.Timers;
+using AWSTest;
+namespace AWSTest
+{
+	public class CloudFrontSecurityProvider
+	{
+	
+		private readonly RSACryptoServiceProvider privateKey;
+		private readonly string privateKeyId;
+		private readonly SHA1Managed sha1 = new SHA1Managed();
+		
+		public CloudFrontSecurityProvider(string privateKeyId, string privateKey)
+		{
+			this.privateKey = new RSACryptoServiceProvider();
+			RSACryptoServiceProvider.UseMachineKeyStore = false;
+			
+			this.privateKey.FromXmlString(privateKey);
+			this.privateKeyId = privateKeyId;
+		}
+		
+		private static int getUnixTime(DateTime time)
+		{
+			var referenceTime = new DateTime(1970, 1, 1).ToLocalTime();
+			return (int)(time - referenceTime).TotalSeconds;
+		}
+		
+		public string GetCustomUrl(string url, DateTime expiration)
+		{
+			string expirationEpoch = getUnixTime(expiration).ToString();
+			
+			string policy =
+				@"{""Statement"":[{""Resource"":""<url>"",""Condition"":{""DateLessThan"":{""AWS:EpochTime"":<expiration>}}}]}".
+					Replace("<url>", url).
+					Replace("<expiration>", expirationEpoch);
+			
+			string signature = getUrlSafeString(sign(policy));
+			
+			return url + string.Format("?Policy={0}&Signature={1}&Key-Pair-Id={2}", getUrlSafeString(Encoding.ASCII.GetBytes(policy)), signature, privateKeyId);
+		}
+		
+		private static string getUrlSafeString(byte[] data)
+		{
+			return Convert.ToBase64String(data).Replace('+', '-').Replace('=', '_').Replace('/', '~');
+		}
+		
+		private byte[] sign(string data)
+		{
+			byte[] plainbytes = Encoding.UTF8.GetBytes(data);
+			
+			byte[] hash = sha1.ComputeHash(plainbytes);
+			
+			return privateKey.SignHash(hash, null);
+		}
+	
+
+			
+			
+			
+			//	Clipboard.SetText(signedUrl);
+			
+	
+	}
+}
