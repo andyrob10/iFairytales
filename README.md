@@ -8,11 +8,9 @@ This script was created to allow content (movies and files) to be delivered secu
 Usage:
 The scripts were written from AWS C# .net SDK specifically for Unity 3D in order to be able to stream video to mobile users around the world. There are two basic scripts. The first is the class CloudFrontSecurityProvider and the second the Download method script. The download method is called when a user would click on the download button.
 
-![image](https://user-images.githubusercontent.com/50190461/216383416-103c4844-0586-439b-a78a-362a717aa3a8.png)
 
+<img src="https://user-images.githubusercontent.com/50190461/216384581-59a92ebd-6f27-44e3-8774-b188eb1413b0.png" height="300"> <img src="https://user-images.githubusercontent.com/50190461/135717985-a04a067b-31bd-49d0-9936-ee28104ba89b.png" height="300"/>
 
-<img src="https://user-images.githubusercontent.com/50190461/135717985-a04a067b-31bd-49d0-9936-ee28104ba89b.png" width="700"/>
-
-
+<img src="https://user-images.githubusercontent.com/50190461/216385660-57008628-246d-4137-a21b-d3182a3247b1.png" width="700"/>
 
 
